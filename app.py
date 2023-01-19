@@ -5,22 +5,21 @@ import pandas as pd
 import pydeck as pdk
 import requests
 from config import Config
+from add_coordinate import get_coordinate
 
 
-# st.title("가까운 병원 찾기")
+st.title("가까운 병원 찾기")
 
-coordinate_url = 'https://dapi.kakao.com/v2/local/search/address.json'
+df = pd.read_csv('data/hospital.csv')
 
-location = "운남로 167"
+st.dataframe(df)
 
-params = {'query' : location}
+# 행의 수를 추출
+num_lows = df.shape[0]
 
-headers = {'Authorization': 'KakaoAK ' + Config.REST_API_KEY}
+# 행의 수와 인덱스와 같은 리스트를 생성해 반복
+for i in list(np.arange(num_lows)) :
+    # 병원이름 추출
+    keyword = df.iloc[i, 1] 
+    print(keyword)
 
-response = requests.get(coordinate_url, params=params, headers=headers).json()
-
-
-x_coordinate = response['documents'][0]['address']['x']
-y_coordinate = response['documents'][0]['address']['y']
-
-print(x_coordinate)
