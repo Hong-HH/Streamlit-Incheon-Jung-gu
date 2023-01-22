@@ -22,4 +22,32 @@ def get_coordinate(location ) :
     return [x_coordinate, y_coordinate]
 
 
+st.title("위치 추가 안된 병원 추가입력")
+
+df = pd.read_csv('data/hospital_location2.csv', index_col=0)
+
+st.dataframe(df)
+
+# 행의 수를 추출
+num_lows = df.shape[0]
+
+# 행으로 넣어줄 빈 리스트 생성
+x_coordinate = []
+y_coordinate = []
+
+
+# 행의 수와 인덱스와 같은 리스트를 생성해 반복
+for i in list(np.arange(num_lows)) :
+    if df.iloc[i, 5] == '' :
+        print("좌표 추가")
+        location =  df.iloc[i, 2]
+        coordinate_list = get_coordinate(location)
+
+        df.iloc[i, 5] = coordinate_list[0]
+        df.iloc[i, 6] = coordinate_list[1]
+
+
+# 결과 확인
+st.dataframe(df)
+
 
