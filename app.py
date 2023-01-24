@@ -9,42 +9,110 @@ from config import Config
 
 st.title("가까운 병원 찾기")
 
-# pydeck 이해를 위한 테스트 코드
+location = st.text_input('원하는 도로명 주소 입력', '도로명 주소')
 
-df = pd.read_csv('data/hospital_location_complete.csv', index_col= 0)
-df.columns = ['인덱스', '분류', '이름', '전화번호', 'lat' , 'lon'] #,분류,이름,전화번호,location,x_coordinate,y_coordinate
+if st.button('검색'):
 
-# 병원 아이콘 URL
-ICON_URL = "https://cdn.pixabay.com/photo/2017/10/08/19/55/cruz-2831364_960_720.png"
+    df = pd.read_csv('data/hospital_location_complete.csv', index_col= 0)
+    # print (df.columns)
+    df.columns = [ '분류', '이름', '전화번호', '위치','lon' , 'lat'] #,분류,이름,전화번호,location,x_coordinate,y_coordinate
 
-# 아이콘 크기 등 정의
-icon_data = {
-    "url": ICON_URL,
-    "width": 242,
-    "height": 242,
-    "anchorY": 242,
-}
+    df_show = df.copy
 
-df["icon_data"] = None
+    st.dataframe(df)
 
-df_set = df.copy()
-
-for i in df_set.index:
-    df["icon_data"][i] = icon_data
-
-view_state = pdk.data_utils.compute_view(df_set[["lon", "lat"]], 0.1)
-
-icon_layer = pdk.Layer(
-    type="IconLayer",
-    data=df_set,
-    get_icon="icon_data",
-    get_size=4,
-    size_scale=15,
-    get_position=["lon", "lat"],
-    pickable=True,
-)
+    # 병원 아이콘 URL
+    ICON_URL1 = "https://cdn.pixabay.com/photo/2020/03/12/23/35/covid-19-4926456_960_720.png"
+    ICON_URL2 = "https://cdn.pixabay.com/photo/2017/10/08/19/55/cruz-2831364_960_720.png"
+    ICON_URL3 = "https://cdn.pixabay.com/photo/2017/09/30/18/58/lungs-2803208_960_720.png"
+    ICON_URL4 = "https://cdn.pixabay.com/photo/2013/07/13/11/54/location-158934_960_720.png"
 
 
-r = pdk.Deck(layers=[icon_layer], initial_view_state=view_state, tooltip={"text": "{이름}"})
 
-st.pydeck_chart(r)
+    # 아이콘 크기 등 정의
+    icon_data1 = {
+        "url": ICON_URL1,
+        "width": 242,
+        "height": 242,
+        "anchorY": 242,
+    }
+    icon_data2 = {
+        "url": ICON_URL2,
+        "width": 242,
+        "height": 242,
+        "anchorY": 242,
+    }
+    icon_data3 = {
+        "url": ICON_URL3,
+        "width": 242,
+        "height": 242,
+        "anchorY": 242,
+    }
+
+
+
+
+    df["icon_data"] = None
+
+
+
+    # # 행의 수를 추출
+    # num_lows = df_set.shape[0]
+
+    # print(df_set.iloc[0 , 6] )
+
+
+    # for i in list(np.arange(num_lows)) :
+    #  df_set['icon_data'][i]  = icon_data
+
+
+    for i in df.index:
+
+        
+
+        if df.iloc[i,0] == 1:
+            print ("분류 1")
+            df["icon_data"][i] =  icon_data1
+        elif df.iloc[i,0] == 2 :
+            print ("분류 2")
+            df["icon_data"][i] =  icon_data2
+        elif df.iloc[i,0] == 3 :
+            print ("분류 3")
+            df["icon_data"][i] =  icon_data3
+
+        else :
+            print("else")
+
+    
+
+    st.dataframe(df)
+
+    # view_state = pdk.data_utils.compute_view(df[["lon", "lat"]], 0.1)
+    # 연안동 중심으로 보면 중구 가운데 위치함
+    view_state = pdk.ViewState(
+        longitude=126.603881208244,
+        latitude=37.4542773489972,
+        zoom=10,
+        pitch=50
+    )
+
+
+
+    icon_layer = pdk.Layer(
+        type="IconLayer",
+        data=df,
+        get_icon="icon_data",
+        get_size=4,
+        size_scale=15,
+        get_position=["lon", "lat"],
+        pickable=True,
+    )
+
+
+    r = pdk.Deck(map_style='mapbox://styles/mapbox/light-v9', layers=[icon_layer], initial_view_state=view_state, tooltip={"text": "{이름}"})
+
+    st.pydeck_chart(r)
+
+
+
+
