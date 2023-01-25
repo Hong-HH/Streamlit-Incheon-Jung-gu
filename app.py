@@ -9,17 +9,13 @@ from config import Config
 
 st.title("가까운 병원 찾기")
 
-location = st.text_input('원하는 도로명 주소 입력', '도로명 주소')
+location = st.text_input('원하는 도로명 주소 입력')
 
 if st.button('검색'):
 
     df = pd.read_csv('data/hospital_location_complete.csv', index_col= 0)
     # print (df.columns)
     df.columns = [ '분류', '이름', '전화번호', '위치','lon' , 'lat'] #,분류,이름,전화번호,location,x_coordinate,y_coordinate
-
-    df_show = df.copy
-
-    st.dataframe(df)
 
     # 병원 아이콘 URL
     ICON_URL1 = "https://cdn.pixabay.com/photo/2020/03/12/23/35/covid-19-4926456_960_720.png"
@@ -48,36 +44,28 @@ if st.button('검색'):
         "height": 242,
         "anchorY": 242,
     }
+    icon_data4 = {
+        "url": ICON_URL4,
+        "width": 242,
+        "height": 242,
+        "anchorY": 242,
+    }
 
 
-
-
+    # dataframe 에 icon_data 행 추가
     df["icon_data"] = None
 
-
-
-    # # 행의 수를 추출
-    # num_lows = df_set.shape[0]
-
-    # print(df_set.iloc[0 , 6] )
-
-
-    # for i in list(np.arange(num_lows)) :
-    #  df_set['icon_data'][i]  = icon_data
-
-
-    for i in df.index:
-
-        
+    # 분류에 따라 아이콘 값 넣어주기
+    for i in df.index:        
 
         if df.iloc[i,0] == 1:
-            print ("분류 1")
+            # print ("분류 1")
             df["icon_data"][i] =  icon_data1
         elif df.iloc[i,0] == 2 :
-            print ("분류 2")
+            # print ("분류 2")
             df["icon_data"][i] =  icon_data2
         elif df.iloc[i,0] == 3 :
-            print ("분류 3")
+            # print ("분류 3")
             df["icon_data"][i] =  icon_data3
 
         else :
@@ -85,14 +73,39 @@ if st.button('검색'):
 
     
 
-    st.dataframe(df)
+    # 행의 수를 추출
+    num_lows = df.shape[0]
 
-    # view_state = pdk.data_utils.compute_view(df[["lon", "lat"]], 0.1)
+    # 마지막 행에 내 위치에 대한 데이터 추가
+    # 1. 내위치로 api 호출, 좌표 가져오기
+    coordinate_url = 'https://dapi.kakao.com/v2/local/search/address.json'
+    params = {'query' : location} 
+    headers = {'Authorization': 'KakaoAK ' + Config.REST_API_KEY}
+
+    try :
+        response = requests.get(coordinate_url, params=params, headers=headers).json()
+
+        x_coordinate = float(response['documents'][0]['address']['x'])
+        y_coordinate = float(response['documents'][0]['address']['y'])
+
+        
+
+    except :
+        print("Error in api")
+
+    # 2. 정보 dataframe 에 넣기
+    # 분류, 이름, 전화번호, 위치, lon, lat, icon_data
+    df.loc[num_lows] = [4, "내 위치",'', location, x_coordinate, y_coordinate, icon_data4]
+
+    # st.dataframe(df)
+
     # 연안동 중심으로 보면 중구 가운데 위치함
+    # 지금은 입력된 위치 정보 (location) 기준으로 두기
+
     view_state = pdk.ViewState(
-        longitude=126.603881208244,
-        latitude=37.4542773489972,
-        zoom=10,
+        longitude= x_coordinate,
+        latitude= y_coordinate ,
+        zoom=15,
         pitch=50
     )
 

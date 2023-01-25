@@ -28,7 +28,7 @@ def get_coordinate(location ) :
 # 홈페이지 코드 시작
 st.title("위치 추가 안된 병원 추가입력")
 
-df = pd.read_csv('data/hospital_location2.csv', index_col=0)
+df = pd.read_csv('data/hospital_location_complete.csv', index_col=0)
 
 st.dataframe(df)
 
@@ -59,6 +59,6 @@ for i in list(np.arange(num_lows)) :
 st.dataframe(df)
 
 # 값이 채워지는 것을 확인했으니 이를 csv로 저장
-df.to_csv('data/hospital_location_complete.csv')
+df.to_csv('data/hospital_location_complete2.csv')
 
 
