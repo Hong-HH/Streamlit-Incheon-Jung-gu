@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import pydeck as pdk
 import requests
+from PIL import Image
 from config import Config
 
 
@@ -126,6 +127,10 @@ if st.button('검색'):
 
     st.pydeck_chart(r)
 
+    # 범례 넣어주기
+    image = Image.open('data/hospital_legend.png')
+
+    st.image(image)
 
 
 
