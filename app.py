@@ -122,8 +122,8 @@ if st.button('검색'):
         pickable=True,
     )
 
-
-    r = pdk.Deck(map_style='mapbox://styles/mapbox/light-v9', layers=[icon_layer], initial_view_state=view_state, tooltip={"text": "{이름}"})
+    # 맵스타일 참고 : https://deckgl.readthedocs.io/en/latest/gallery/text_layer.html , 여기서 하긴 했는데 예제에서 따온거라 전에 찾아둔 맵 스타일 모아둔거 다시 찾아보자
+    r = pdk.Deck(map_style=pdk.map_styles.ROAD, layers=[icon_layer], initial_view_state=view_state, tooltip={"text": "{이름}"})
 
     st.pydeck_chart(r)
 
